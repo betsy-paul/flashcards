@@ -215,6 +215,8 @@ const App = () => {
             setSelected(null); // Reset selected answer
             setGuessString(''); // Reset guess string
             setFeedback(''); // Reset feedback
+            setStreak(0); // Reset streak
+            setMaxStreak(0); // Reset max streak
           }}>
             Restart
         </button>
@@ -234,6 +236,8 @@ const App = () => {
         setSelected(null); // Reset selected answer
         setGuessString(''); // Reset guess string
         setFeedback(''); // Reset feedback
+        setStreak(0); // Reset streak
+        setMaxStreak(0); // Reset max streak
       }}>
         Restart?
       </button>
