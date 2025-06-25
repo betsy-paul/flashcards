@@ -26,6 +26,7 @@ const App = () => {
   const [flipped, setFlipped] = useState(false);
   const toggleFlip = () => setFlipped(!flipped);
   const [selected, setSelected] = useState(null);
+  
 
   const shuffleArray = (array) => {
     return [...array].sort(() => Math.random() - 0.5);
@@ -79,8 +80,10 @@ const App = () => {
       setIndex(nextI);
       setFlipped(false);
       setSelected(null); // Reset selected answer for the next question
+      guessString = ''; // Reset guess string
     } else {
       setShowResult(true);
+      guessString = ''; // Reset guess string
     }
   };
 
@@ -90,9 +93,22 @@ const App = () => {
       setIndex(0);
       setFlipped(false);
       setSelected(null); // Reset selected answer for the previous question
+      evalGuess = ''; // Reset guess string
     } else {
       setIndex(previousI);
       setFlipped(false);
+      evalGuess = ''; // Reset guess string
+    }
+  };
+
+  const evalGuess = (guessString) => {
+    guessString = guessString.trim().toLowerCase();
+    if (guessString === 'ai') {
+      answer('AI');
+    } else if (guessString === 'human') {
+      answer('Human');
+    } else {
+      console.log('Invalid guess. Please enter "AI" or "Human".');
     }
   };
 
@@ -108,6 +124,21 @@ const App = () => {
       <h2> Score: {score}</h2>
 
     </div>
+
+    <div>
+      <input
+        type="text"
+        name="searchBar"
+        id="guessBar"
+        placeholder="AI or Human?"
+        color="black"
+      />
+
+      <button onClick={() => evalGuess(document.getElementById('guessBar').value)}>
+        Submit
+      </button>
+    </div>
+
 
     <div className="flashcard-container" onClick={toggleFlip}>
       <div className={`flashcard ${flipped ? 'flipped' : ''}`}>
@@ -137,7 +168,6 @@ const App = () => {
         <button onClick={() => answer('Human')} disabled={answeredFlags[index]}>Human</button>
       </div>
 
-
       <div className="footer">
         <button onClick={previous}  disabled={index === 0}>
           Previous </button>
@@ -151,6 +181,7 @@ const App = () => {
             setFlipped(false);
             setAnsweredFlags(Array(shuffledQuizData.length).fill(false)); // Reset answered flags
             setSelected(null); // Reset selected answer
+            guessString = ''; // Reset guess string
           }}>
             Restart
         </button>
@@ -168,6 +199,7 @@ const App = () => {
         setFlipped(false);
         setAnsweredFlags(Array(shuffledQuizData.length).fill(false)); // Reset answered flags
         setSelected(null); // Reset selected answer
+        guessString = ''; // Reset guess string
       }}>
         Restart?
       </button>

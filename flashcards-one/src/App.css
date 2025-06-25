@@ -72,14 +72,14 @@
 }
 
 button {
-  border-radius: 12px;
+  border-radius: 8px;
   border-color: #404157;
-  border: 1px solid transparent;
+  border-width: 1.2px;
   padding: 0.2em 2em;
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #a8b6d5e6;
+  background-color: #dfe6f5e6;
   color:  rgba(18, 1, 20, 0.87);
   cursor: pointer;
   margin-top: 10px;
@@ -107,9 +107,13 @@ button:hover {
 
 .flashcard-container {
   perspective: 1000px;
-  width: 300px;
+  width: 400px;
   height: 300px;
   margin: 2rem auto;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-width: 4px;
+  border-color: #404157;
 }
 
 .flashcard {
@@ -135,6 +139,8 @@ button:hover {
   border: 2px solid #ccc;
   border-radius: 10px;
   overflow: hidden;
+  border-color: #bac2d3;
+  border-width: 4px;
 }
 
 .front {
@@ -146,6 +152,14 @@ button:hover {
   transform: rotateY(180deg);
   padding: 1rem;
   text-align: center;
+}
+
+#guessBar {
+border-radius: 4px;
+background-color: #d7e1ff;
+border-color: #bac2d3;
+border-width: 2px;
+padding: 6px;
 }
 
 
