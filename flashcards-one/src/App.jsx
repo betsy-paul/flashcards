@@ -6,7 +6,7 @@ import image2 from './assets/image2.png';
 import image3 from './assets/image3.png';
 import image4 from './assets/image4.png';
 
-import {useState} from 'react';
+import {useState, useRef} from 'react';
 
 
 
@@ -26,7 +26,11 @@ const App = () => {
   const [flipped, setFlipped] = useState(false);
   const toggleFlip = () => setFlipped(!flipped);
   const [selected, setSelected] = useState(null);
-  
+  const [guessString, setGuessString] = useState('');
+  const inputRef = useRef();
+  const [feedback, setFeedback] = useState('');
+  const [streak, setStreak] = useState(0);
+  const [maxStreak, setMaxStreak] = useState(0);
 
   const shuffleArray = (array) => {
     return [...array].sort(() => Math.random() - 0.5);
@@ -57,6 +61,11 @@ const App = () => {
 
   const [answeredFlags, setAnsweredFlags] = useState(Array(quizData.length).fill(false));
 
+  const endings = {
+    isFirst: index === 0,
+    isLast: index === shuffledQuizData.length - 1,
+  };
+
   const answer = (userGuess) => {
     setSelected(userGuess);
 
@@ -71,7 +80,14 @@ const App = () => {
     
     if (shuffledQuizData[index].answer === userGuess) {
       setScore(score + 1);
-    }
+      setStreak((prev) => {
+        const nextStreak = prev + 1;
+        setMaxStreak((max) => Math.max(max, nextStreak));
+        return nextStreak;
+      });
+      } else {
+      setStreak(0);
+  }
   };
 
   const next = () => {
@@ -80,10 +96,12 @@ const App = () => {
       setIndex(nextI);
       setFlipped(false);
       setSelected(null); // Reset selected answer for the next question
-      guessString = ''; // Reset guess string
+      setGuessString(''); // Reset guess string
+      setFeedback(''); // Reset feedback
     } else {
       setShowResult(true);
-      guessString = ''; // Reset guess string
+      setGuessString(''); // Reset guess string
+      setFeedback(''); // Reset feedback
     }
   };
 
@@ -93,11 +111,13 @@ const App = () => {
       setIndex(0);
       setFlipped(false);
       setSelected(null); // Reset selected answer for the previous question
-      evalGuess = ''; // Reset guess string
+      setGuessString(''); // Reset guess string
+      setFeedback(''); // Reset feedback
     } else {
       setIndex(previousI);
       setFlipped(false);
-      evalGuess = ''; // Reset guess string
+      setGuessString(''); // Reset guess string
+      setFeedback(''); // Reset feedback
     }
   };
 
@@ -108,7 +128,7 @@ const App = () => {
     } else if (guessString === 'human') {
       answer('Human');
     } else {
-      console.log('Invalid guess. Please enter "AI" or "Human".');
+      setFeedback('Invalid guess. Please guess "AI" or "Human".');
     }
   };
 
@@ -122,6 +142,7 @@ const App = () => {
       </h4>
 
       <h2> Score: {score}</h2>
+      <h4> Streak: {streak} (Max: {maxStreak})</h4>
 
     </div>
 
@@ -131,10 +152,13 @@ const App = () => {
         name="searchBar"
         id="guessBar"
         placeholder="AI or Human?"
+        value={guessString}
         color="black"
+        onChange={(e) => setGuessString(e.target.value)}
+        ref={inputRef}
       />
 
-      <button onClick={() => evalGuess(document.getElementById('guessBar').value)}>
+      <button onClick={() => evalGuess(inputRef.current.value)} disabled={answeredFlags[index]}>
         Submit
       </button>
     </div>
@@ -157,9 +181,11 @@ const App = () => {
 
     {answeredFlags[index] && selected && (
       <div className="feedback-text">
-        You answered: {selected}
+        You answered: {selected}. That is {shuffledQuizData[index].answer === selected ? 'correct!' : 'incorrect.'}
       </div>
     )}
+
+    {feedback && <div className="feedback-text invalid">{feedback}</div>}
 
       <div className="button-group">
         <button onClick={() => answer('AI')} disabled={answeredFlags[index]}> AI
@@ -169,10 +195,16 @@ const App = () => {
       </div>
 
       <div className="footer">
-        <button onClick={previous}  disabled={index === 0}>
-          Previous </button>
-        <button onClick={next} >
-          Next </button>
+          {!endings.isFirst && (
+          <button onClick={previous}>Previous</button>
+        )}
+
+        {!endings.isLast ? (
+          <button onClick={next}>Next</button>
+          ) : (
+          <button onClick={() => setShowResult(true)}>Submit</button>
+        )}
+
         <button onClick={() => {
             setShuffledQuizData(shuffleArray(quizData));
             setIndex(0);
@@ -181,7 +213,8 @@ const App = () => {
             setFlipped(false);
             setAnsweredFlags(Array(shuffledQuizData.length).fill(false)); // Reset answered flags
             setSelected(null); // Reset selected answer
-            guessString = ''; // Reset guess string
+            setGuessString(''); // Reset guess string
+            setFeedback(''); // Reset feedback
           }}>
             Restart
         </button>
@@ -199,7 +232,8 @@ const App = () => {
         setFlipped(false);
         setAnsweredFlags(Array(shuffledQuizData.length).fill(false)); // Reset answered flags
         setSelected(null); // Reset selected answer
-        guessString = ''; // Reset guess string
+        setGuessString(''); // Reset guess string
+        setFeedback(''); // Reset feedback
       }}>
         Restart?
       </button>
